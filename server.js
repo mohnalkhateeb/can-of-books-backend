@@ -8,6 +8,8 @@ console.log(userModel);
 
 const server = express();
 server.use(cors());
+server.use(express.json());
+server.use(express.urlencoded());
 const PORT = process.env.PORT;
 
 mongoose.connect('mongodb://localhost:27017/books', { useNewUrlParser: true, useUnifiedTopology: true });
@@ -39,22 +41,70 @@ function seedUserCollection() {
 server.get('/', handelProofOfLifeRoute)
 //http://localhost:3003/books?e_mail=sehammalkawi92@gmail.com
 server.get('/books', getBooksData)
-
-
+server.post('/addBook', addBookHandler)
+server.delete('/deletebook/:bookId',deleteBookHandler)
 function handelProofOfLifeRoute(request, response) {
     response.send('every thing is working')
 }
 function getBooksData(request, response) {
 
     let e_mail = request.query.e_mail;
-    
+
     userModel.find({ email: e_mail }, function (error, userData) {
         console.log(userData)
         if (error) { response.send(error, 'did not work') }
         else { response.send(userData[0].books) }
-    
-})}
 
+    })
+}
+// let books2 = await axios.get(`${this.state.server}/addBook?
+// bookName=${bookName}&bookImg=${catBreed}&bookDescription=${bookDescription}
+// &bookStatus=${bookStatus}ownerName=${ownerName}`)
+function addBookHandler(req, res) {
+    console.log(req.body)
+    let { bookName, bookImg, bookDescription, bookStatus, e_mail } = req.body;
+
+    userModel.find({ email: e_mail }, (error, userData) => {
+        if (error) { res.send('cant find user') }
+        else {
+            console.log('before adding', userData[0])
+            userData[0].books.push({
+                name: bookName,
+                description: bookDescription,
+                status: bookStatus,
+                img: bookImg
+            })
+            console.log('after adding', userData[0])
+            userData[0].save()
+            res.send(userData[0].books)
+        }
+    })
+
+}
+function deleteBookHandler(req,res) {
+    console.log(req.params)
+    console.log(req.query)
+    console.log(req.params.bookId)
+    let index = Number(req.params.bookId);
+    console.log(index)
+    let user_mail = req.query.e_mail;
+    userModel.find({email:user_mail},(error,userData)=>{
+        if(error) {res.send('cant find user')}
+        else{
+           console.log('before deleting',userData[0])
+
+           let newBooksArr = userData[0].books.filter((book,idx)=>{
+               if(idx !== index) {return book}
+            // return idx!==index
+           })
+           userData[0].books=newBooksArr
+           console.log('after deleting',userData[0].books)
+           userData[0].save();
+           res.send(userData[0].books)
+        }
+
+    })
+}
 
 server.listen(PORT, () => {
     console.log(`Listening on PORT ${PORT}`)
