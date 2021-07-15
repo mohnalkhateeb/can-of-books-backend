@@ -9,7 +9,7 @@ console.log(userModel);
 const server = express();
 server.use(cors());
 server.use(express.json());
-server.use(express.urlencoded());
+// server.use(express.urlencoded());
 const PORT = process.env.PORT;
 
 mongoose.connect('mongodb://localhost:27017/books', { useNewUrlParser: true, useUnifiedTopology: true });
@@ -36,13 +36,14 @@ function seedUserCollection() {
     Mohammad.save();
 
 }
-// seedUserCollection();
+seedUserCollection();
 
 server.get('/', handelProofOfLifeRoute)
 //http://localhost:3003/books?e_mail=sehammalkawi92@gmail.com
 server.get('/books', getBooksData)
 server.post('/addBook', addBookHandler)
 server.delete('/deletebook/:bookId',deleteBookHandler)
+server.put('/updatebook/:bookID',updateBookHandler);
 function handelProofOfLifeRoute(request, response) {
     response.send('every thing is working')
 }
@@ -104,6 +105,35 @@ function deleteBookHandler(req,res) {
         }
 
     })
+}
+function updateBookHandler(req,res) {
+    // console.log('aaaaaa',req.body);
+    console.log('aaaaaa',req.params);
+    // let numberCat = 10;
+    // console.log('numberCat',numberCat)
+    // console.log({numberCat})
+
+    let {bookName, bookImg, bookDescription, bookStatus, e_mail} = req.body;
+    let index = Number(req.params.bookID);
+
+    userModel.findOne({email:e_mail},(error,userData)=>{
+        if(error) res.send('error in finding the data')
+        else {
+            console.log(index)
+            userData.books.splice(index,1,{
+                name: bookName,
+                description: bookDescription,
+                status: bookStatus,
+                img: bookImg
+            })
+            console.log(userData)
+            userData.save();
+            res.send(userData.books)
+            
+        }
+    })
+
+
 }
 
 server.listen(PORT, () => {
