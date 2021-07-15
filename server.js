@@ -12,7 +12,7 @@ server.use(express.json());
 // server.use(express.urlencoded());
 const PORT = process.env.PORT;
 
-mongoose.connect('mongodb://mohAlkhateeb301:3QPlpiz1xoAVRRsq@cluster0-shard-00-00.ucykc.mongodb.net:27017,cluster0-shard-00-01.ucykc.mongodb.net:27017,cluster0-shard-00-02.ucykc.mongodb.net:27017/my-books?ssl=true&replicaSet=atlas-sbsml7-shard-0&authSource=admin&retryWrites=true&w=majority', { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect('mongodb://localhost:27017/books', { useNewUrlParser: true, useUnifiedTopology: true });
 
 // const bookSchema=new mongoose.Schema({
 //     name: String,
