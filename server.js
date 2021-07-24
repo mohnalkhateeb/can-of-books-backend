@@ -12,7 +12,8 @@ server.use(express.json());
 // server.use(express.urlencoded());
 const PORT = process.env.PORT;
 
-mongoose.connect('mongodb://localhost:27017/books', { useNewUrlParser: true, useUnifiedTopology: true });
+// mongoose.connect('mongodb://localhost:27017/books', { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect(process.env.MONGO_DATABASE, { useNewUrlParser: true, useUnifiedTopology: true });
 
 // const bookSchema=new mongoose.Schema({
 //     name: String,
@@ -36,7 +37,7 @@ function seedUserCollection() {
     Mohammad.save();
 
 }
-seedUserCollection();
+// seedUserCollection();
 
 server.get('/', handelProofOfLifeRoute)
 //http://localhost:3003/books?e_mail=sehammalkawi92@gmail.com
